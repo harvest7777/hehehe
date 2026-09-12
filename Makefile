@@ -19,12 +19,15 @@ dev: check-dependencies
 			sleep 1; \
 		done; \
 	fi; \
+	npm run dev:extension >/tmp/browser-vite.log 2>&1 & \
+	vite_pid=$$!; \
+	trap 'kill $$vite_pid 2>/dev/null || true; kill $${ollama_pid:-} 2>/dev/null || true' EXIT INT TERM; \
 	echo; \
-	echo "Dev server starting at http://localhost:3000"; \
+	echo "API server starting at http://localhost:3000"; \
+	echo "Extension dev server starting at http://localhost:5173"; \
 	echo "To test the extension:"; \
 	echo "1. Open chrome://extensions"; \
 	echo "2. Enable Developer mode"; \
-	echo "3. Click Load unpacked and select this project directory"; \
-	echo "4. Refresh the extension after source changes"; \
+	echo "3. Click Load unpacked and select the dist directory"; \
 	echo; \
 	npm start
