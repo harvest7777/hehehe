@@ -1,5 +1,30 @@
-dependencies of this is
-- node (for typescript & server)
-- ollama (to run the model)
+.PHONY: check-dependencies dev
 
-make dev should start the ollama server, it shoudl be dependent on make check dependencies
+check-dependencies:
+	@command -v node >/dev/null 2>&1 || { echo "Error: Node.js is required."; exit 1; }
+	@command -v ollama >/dev/null 2>&1 || { echo "Error: Ollama is required."; exit 1; }
+	@echo "Dependencies ready:\n-----\nNode.js $$(node --version)\n$$(ollama --version)"
+
+dev: OLLAMA_TAGS_URL ?= http://127.0.0.1:11434/api/tags
+dev: check-dependencies
+	@set -e; \
+	if curl -fsS --max-time 2 "$(OLLAMA_TAGS_URL)" >/dev/null 2>&1; then \
+		echo "Using the existing Ollama server."; \
+	else \
+		echo "Starting Ollama server..."; \
+		ollama serve >/tmp/browser-ollama.log 2>&1 & \
+		ollama_pid=$$!; \
+		trap 'kill $$ollama_pid 2>/dev/null || true' EXIT INT TERM; \
+		until curl -fsS --max-time 2 "$(OLLAMA_TAGS_URL)" >/dev/null 2>&1; do \
+			sleep 1; \
+		done; \
+	fi; \
+	echo; \
+	echo "Dev server starting at http://localhost:3000"; \
+	echo "To test the extension:"; \
+	echo "1. Open chrome://extensions"; \
+	echo "2. Enable Developer mode"; \
+	echo "3. Click Load unpacked and select this project directory"; \
+	echo "4. Refresh the extension after source changes"; \
+	echo; \
+	npm start
