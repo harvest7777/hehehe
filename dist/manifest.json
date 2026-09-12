@@ -19,7 +19,7 @@
     "default_path": "sidepanel.html"
   },
   "background": {
-    "service_worker": "src/extension/background.ts",
+    "service_worker": "service-worker-loader.js",
     "type": "module"
   }
 }

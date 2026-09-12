@@ -1,0 +1,34 @@
+body {
+  min-width: 240px;
+  margin: 0;
+  padding: 24px;
+  color: #202124;
+  font: 16px/1.5 system-ui, -apple-system, sans-serif;
+  text-align: center;
+}
+
+main {
+  display: grid;
+  gap: 12px;
+}
+
+button {
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 6px;
+  color: white;
+  background: #1f883d;
+  cursor: pointer;
+  font: inherit;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+p {
+  min-height: 24px;
+  margin: 0;
+  font-size: 13px;
+}
