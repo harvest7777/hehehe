@@ -49,6 +49,9 @@ export class TabController {
   }
 
   async drag(start: Point, end: Point): Promise<void> {
+    await this.assertPointInViewport(start);
+    await this.assertPointInViewport(end);
+
     await this.withDebugger(async () => {
       await this.sendMouseEvent({
         type: "mouseMoved",
