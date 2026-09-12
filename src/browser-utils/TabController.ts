@@ -7,7 +7,6 @@ const DEBUGGER_PROTOCOL_VERSION = "1.3";
 
 export class TabController {
   private readonly debuggee: chrome.debugger.Debuggee;
-  private lastPointerPosition?: Point;
 
   constructor(public readonly id: number) {
     this.debuggee = { tabId: id };
@@ -21,8 +20,6 @@ export class TabController {
         y: point.y
       });
     });
-
-    this.lastPointerPosition = point;
   }
 
   async drag(start: Point, end: Point): Promise<void> {
@@ -54,8 +51,6 @@ export class TabController {
         clickCount: 1
       });
     });
-
-    this.lastPointerPosition = start;
   }
   async click(point: Point): Promise<void> {
     await this.withDebugger(async () => {
@@ -80,8 +75,6 @@ export class TabController {
         clickCount: 1
       });
     });
-
-    this.lastPointerPosition = point;
   }
 
   private async withDebugger(action: () => Promise<void>): Promise<void> {
