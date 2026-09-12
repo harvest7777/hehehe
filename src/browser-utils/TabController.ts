@@ -25,6 +25,38 @@ export class TabController {
     this.lastPointerPosition = point;
   }
 
+  async drag(start: Point, end: Point): Promise<void> {
+    await this.withDebugger(async () => {
+      await this.sendMouseEvent({
+        type: "mouseMoved",
+        x: start.x,
+        y: start.y
+      });
+
+      await this.sendMouseEvent({
+        type: "mousePressed",
+        x: start.x,
+        y: start.y,
+        button: "left",
+        buttons: 1,
+        clickCount: 1
+      });
+      await this.sendMouseEvent({
+        type: "mouseMoved",
+        x: end.x,
+        y: end.y
+      });
+      await this.sendMouseEvent({
+        type: "mouseReleased",
+        x: start.x,
+        y: start.y,
+        button: "left",
+        clickCount: 1
+      });
+    });
+
+    this.lastPointerPosition = start;
+  }
   async click(point: Point): Promise<void> {
     await this.withDebugger(async () => {
       await this.sendMouseEvent({
