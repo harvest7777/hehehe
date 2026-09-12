@@ -18,6 +18,8 @@ export class TabController {
   }
 
   async move(point: Point): Promise<void> {
+    await this.assertPointInViewport(point);
+
     await this.withDebugger(async () => {
       await this.sendMouseEvent({
         type: "mouseMoved",
@@ -27,7 +29,7 @@ export class TabController {
     });
   }
 
-  async getViewportDimensions(): Promise<ViewportDimensions> {
+  private async getViewportDimensions(): Promise<ViewportDimensions> {
     const metrics = await this.withDebugger(async () => {
       return await chrome.debugger.sendCommand(
         this.debuggee,
@@ -77,6 +79,8 @@ export class TabController {
     });
   }
   async click(point: Point): Promise<void> {
+    await this.assertPointInViewport(point);
+
     await this.withDebugger(async () => {
       await this.sendMouseEvent({
         type: "mouseMoved",
@@ -130,6 +134,23 @@ export class TabController {
       this.debuggee,
       "Input.dispatchMouseEvent",
       params
+    );
+  }
+
+  private async assertPointInViewport(point: Point): Promise<void> {
+    if (!await this.pointIsInViewport(point)) {
+      throw new Error(`Point (${point.x}, ${point.y}) is outside the tab viewport.`);
+    }
+  }
+
+  private async pointIsInViewport(point: Point): Promise<boolean> {
+    const { widthPixels, heightPixels } = await this.getViewportDimensions();
+
+    return (
+      point.x >= 0 &&
+      point.x < widthPixels &&
+      point.y >= 0 &&
+      point.y < heightPixels
     );
   }
 }
