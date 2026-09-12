@@ -11,8 +11,8 @@ async function clickActiveTab(): Promise<void> {
     if (activeTab?.id === undefined) {
       throw new Error("No active tab was found.");
     }
-
-    await new TabController(activeTab.id).click({ x: 100, y: 100 });
+    console.info('dragging');
+    await new TabController(activeTab.id).drag({ x: 300, y: 100 }, { x: 599, y: 2234850 });
   } catch (error) {
     console.error(error);
   }
