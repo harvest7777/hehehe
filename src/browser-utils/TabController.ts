@@ -3,6 +3,11 @@ export interface Point {
   y: number;
 }
 
+export interface ViewportDimensions {
+  widthPixels: number;
+  heightPixels: number;
+}
+
 const DEBUGGER_PROTOCOL_VERSION = "1.3";
 
 export class TabController {
@@ -20,6 +25,25 @@ export class TabController {
         y: point.y
       });
     });
+  }
+
+  async getViewportDimensions(): Promise<ViewportDimensions> {
+    const metrics = await this.withDebugger(async () => {
+      return await chrome.debugger.sendCommand(
+        this.debuggee,
+        "Page.getLayoutMetrics"
+      ) as {
+        cssVisualViewport: {
+          clientWidth: number;
+          clientHeight: number;
+        };
+      };
+    });
+
+    return {
+      widthPixels: metrics.cssVisualViewport.clientWidth,
+      heightPixels: metrics.cssVisualViewport.clientHeight
+    };
   }
 
   async drag(start: Point, end: Point): Promise<void> {
@@ -45,8 +69,8 @@ export class TabController {
       });
       await this.sendMouseEvent({
         type: "mouseReleased",
-        x: start.x,
-        y: start.y,
+        x: end.x,
+        y: end.y,
         button: "left",
         clickCount: 1
       });
@@ -77,14 +101,14 @@ export class TabController {
     });
   }
 
-  private async withDebugger(action: () => Promise<void>): Promise<void> {
+  private async withDebugger<T>(action: () => Promise<T>): Promise<T> {
     let debuggerAttached = false;
     let operationFailed = false;
 
     try {
       await chrome.debugger.attach(this.debuggee, DEBUGGER_PROTOCOL_VERSION);
       debuggerAttached = true;
-      await action();
+      return await action();
     } catch (error) {
       operationFailed = true;
       throw error;
