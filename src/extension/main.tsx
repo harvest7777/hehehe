@@ -175,7 +175,7 @@ function App() {
         },
         body: JSON.stringify({
           imageDataUrl: screenshotDataUrl,
-          prompt: "Identify the center coordinates of the button labeled Click me. Return only JSON with x and y coordinates relative to the image."
+          prompt: "Describe this screenshot in one sentence."
         })
       });
       const analysisResult = await analysisResponse.json();
