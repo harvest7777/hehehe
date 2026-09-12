@@ -54,28 +54,22 @@ export class TabController {
 
   private async withDebugger(action: () => Promise<void>): Promise<void> {
     let debuggerAttached = false;
-    let operationError: Error | undefined;
+    let operationFailed = false;
 
     try {
       await chrome.debugger.attach(this.debuggee, DEBUGGER_PROTOCOL_VERSION);
       debuggerAttached = true;
       await action();
     } catch (error) {
-      operationError = new Error(
-        `Could not control tab ${this.id}: ${getErrorMessage(error)}`,
-        { cause: error }
-      );
-      throw operationError;
+      operationFailed = true;
+      throw error;
     } finally {
       if (debuggerAttached) {
         try {
           await chrome.debugger.detach(this.debuggee);
         } catch (error) {
-          if (!operationError) {
-            throw new Error(
-              `Could not detach debugger from tab ${this.id}: ${getErrorMessage(error)}`,
-              { cause: error }
-            );
+          if (!operationFailed) {
+            throw error;
           }
         }
       }
@@ -83,22 +77,10 @@ export class TabController {
   }
 
   private async sendMouseEvent(params: Record<string, unknown>): Promise<void> {
-    try {
-      await chrome.debugger.sendCommand(
-        this.debuggee,
-        "Input.dispatchMouseEvent",
-        params
-      );
-    } catch (error) {
-      throw new Error(
-        `Could not send mouse event to tab ${this.id}: ${getErrorMessage(error)}`,
-        { cause: error }
-      );
-    }
+    await chrome.debugger.sendCommand(
+      this.debuggee,
+      "Input.dispatchMouseEvent",
+      params
+    );
   }
-
-}
-
-function getErrorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
 }
