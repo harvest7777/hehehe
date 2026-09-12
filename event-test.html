@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Event Test</title>
+  </head>
+  <body>
+    <button id="test-button" type="button">Click me</button>
+    <pre id="output"></pre>
+
+    <script>
+      const testButton = document.querySelector("#test-button");
+      const output = document.querySelector("#output");
+
+      testButton.addEventListener("click", (event) => {
+        console.log(event);
+        console.log(event.isTrusted);
+        output.textContent = `event: ${event}\nisTrusted: ${event.isTrusted}`;
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Hello World Extension",
+  "version": "1.0.0",
+  "description": "A starter Chrome extension that says hello.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "debugger"
+  ],
+  "host_permissions": [
+    "http://localhost/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
